@@ -12,7 +12,7 @@ testFunction
 
 # DIY dirs
 notebooks/
-ref_contracts/
+contracts_ref/
 deploy_all
 verify
 task
