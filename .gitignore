@@ -1,6 +1,7 @@
 # Hardhat dirs
 artifacts
 cache
+deploy
 deployments
 node_modules
 scripts
