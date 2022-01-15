@@ -45,3 +45,7 @@ hardhat.config.ts
 
 # complementary info
 README.md
+
+#IDE
+.idea
+.vscode
