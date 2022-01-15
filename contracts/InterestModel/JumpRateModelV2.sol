@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "contracts/InterestModel/BaseJumpRateModelV2.sol";
-import "contracts/InterestModel/InterestRateModel.sol";
-import "contracts/Utils/SafeMath.sol";
+import "../InterestModel/BaseJumpRateModelV2.sol";
+import "../InterestModel/InterestRateModel.sol";
+import "../Utils/SafeMath.sol";
 
 /**
   * @title Compound's JumpRateModel Contract V2 for V2 cTokens

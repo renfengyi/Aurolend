@@ -1,7 +1,7 @@
 pragma solidity ^0.8.0;
 
-import "contracts/Utils/ErrorReporter.sol";
-import "contracts/Comptroller/ComptrollerStorage.sol";
+import "../Utils/ErrorReporter.sol";
+import "../Comptroller/ComptrollerStorage.sol";
 /**
  * @title ComptrollerCore
  * @dev Storage for the comptroller is at this address, while execution is delegated to the `comptrollerImplementation`.

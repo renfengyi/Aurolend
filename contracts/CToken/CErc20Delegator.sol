@@ -1,6 +1,6 @@
 pragma solidity ^0.8.0;
 
-import "contracts/Interfaces/CTokenInterfaces.sol";
+import "../Interfaces/CTokenInterfaces.sol";
 
 /**
  * @title Compound's CErc20Delegator Contract

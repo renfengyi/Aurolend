@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "contracts/Utils/ErrorReporter.sol";
-import "contracts/CToken/CToken.sol";
-import "contracts/Oracle/PriceOracle.sol";
-import "contracts/Interfaces/ComptrollerInterface.sol";
-import "contracts/Comptroller/ComptrollerStorage.sol";
-import "contracts/Comptroller/Unitroller.sol";
-import "contracts/Governance/Comp.sol";
+import "../Utils/ErrorReporter.sol";
+import "../CToken/CToken.sol";
+import "../Oracle/PriceOracle.sol";
+import "../Interfaces/ComptrollerInterface.sol";
+import "../Comptroller/ComptrollerStorage.sol";
+import "../Comptroller/Unitroller.sol";
+import "../Governance/Comp.sol";
 
 /**
  * @title Compound's Comptroller Contract

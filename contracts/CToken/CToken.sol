@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "contracts/Interfaces/CTokenInterfaces.sol";
-import "contracts/InterestModel/InterestRateModel.sol";
-import "contracts/Interfaces/EIP20Interface.sol";
-import "contracts/Utils/Exponential.sol";
-import "contracts/Utils/ErrorReporter.sol";
+import "../Interfaces/CTokenInterfaces.sol";
+import "../InterestModel/InterestRateModel.sol";
+import "../Interfaces/EIP20Interface.sol";
+import "../Utils/Exponential.sol";
+import "../Utils/ErrorReporter.sol";
 
 abstract contract CToken is CTokenInterface, Exponential, TokenErrorReporter {
     /**

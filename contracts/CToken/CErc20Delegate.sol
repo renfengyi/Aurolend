@@ -1,6 +1,6 @@
 pragma solidity ^0.8.0;
 
-import "contracts/CToken/CErc20.sol";
+import "../CToken/CErc20.sol";
 
 /**
  * @title Compound's CErc20Delegate Contract
