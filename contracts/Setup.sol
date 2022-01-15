@@ -19,7 +19,7 @@ import "./tokenForTest/TestERC20Asset.sol";
 
 contract Setup {
     // address public TT1 = 0xe09D4de9f1dCC8A4d5fB19c30Fb53830F8e2a047;
-    TestERC20Asset public TT1 = new TestERC20Asset("TT1", "T1");
+    TestERC20Asset public TT1;
     Comp public comp;
     CErc20Delegator public cTT1;
     CErc20Delegate public cTT1Delegate;
@@ -31,6 +31,9 @@ contract Setup {
     Timelock public timelock;
 
     constructor() {
+        // underlying asset
+        TT1 = new TestERC20Asset("TT1", "T1");
+
         timelock = new Timelock(msg.sender, uint256(1 seconds));
         // governance token for borrow and incentives
         comp = new Comp(msg.sender);
