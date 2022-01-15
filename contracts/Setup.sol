@@ -21,9 +21,9 @@ contract Setup {
     Comp public comp;
     CErc20Delegator public cTT1;
     CErc20Delegate	public cTT1Delegate;
-    Unitroller		public unitroller;
-    Comptroller	public comptroller;
-    Comptroller	public unitrollerProxy;
+    Unitroller		public unitrollerProxy;
+    Comptroller	public comptrollerImpl;
+    Comptroller	public unitrollerProxyToImpl;
     JumpRateModelV2	public interestRateModel;
     SimplePriceOracle	public priceOracle;
     Timelock public timelock;
@@ -43,20 +43,20 @@ contract Setup {
                                 address(timelock)  // owner 
                                                 );
         /* configure comptroller:
-            1. unitroller as proxy with data storage; 
-            2. comptroller as implementation;
+            1. unitrollerProxy as proxy with data storage;
+            2. comptrollerImpl as implementation;
         */
-        unitroller = new Unitroller();
-        comptroller = new Comptroller();
-        unitrollerProxy = Comptroller(address(unitroller));
-        unitroller._setPendingImplementation(address(comptroller)); // call from address(this)
-        comptroller._become(unitroller);
+        unitrollerProxy = new Unitroller();
+        comptrollerImpl = new Comptroller();
+        unitrollerProxyToImpl = Comptroller(address(unitrollerProxy));
+        unitrollerProxy._setPendingImplementation(address(comptrollerImpl)); // call from address(this)
+        comptrollerImpl._become(unitrollerProxy);
 
-        unitrollerProxy._setPriceOracle(priceOracle);
+        unitrollerProxyToImpl._setPriceOracle(priceOracle);
         // maximum fraction of origin loan that can be liquidated
-        unitrollerProxy._setCloseFactor(500000000000000000); // 50%
+        unitrollerProxyToImpl._setCloseFactor(500000000000000000); // 50%
         // collateral received as a multiplier of amount liquidator paid
-        unitrollerProxy._setLiquidationIncentive(1080000000000000000); // 108%
+        unitrollerProxyToImpl._setLiquidationIncentive(1080000000000000000); // 108%
 
         /* configure CToken:
             1. CErc20Delegator as proxy;
@@ -67,7 +67,7 @@ contract Setup {
         bytes memory data = new bytes(0x00);
         cTT1 = new CErc20Delegator(
                     TT1, // underlying token
-                    ComptrollerInterface(address(unitroller)), 
+                    ComptrollerInterface(address(unitrollerProxy)),
                     InterestRateModel(address(interestRateModel)),
                     // 2 * 10 ** 8 cTT1 = 1 TT1
                     2 * 10 ** 8 * 10 ** 18, 
@@ -84,9 +84,9 @@ contract Setup {
         // set price of TT1
         priceOracle.setUnderlyingPrice(CToken(address(cTT1)), 1e18);
         // set markets supported by comptroller
-        unitrollerProxy._supportMarket(CToken(address(cTT1)));
+        unitrollerProxyToImpl._supportMarket(CToken(address(cTT1)));
         // multiplier of collateral for borrowing cap 
-        unitrollerProxy._setCollateralFactor(CToken(address(cTT1)), 
+        unitrollerProxyToImpl._setCollateralFactor(CToken(address(cTT1)),
                                              60 * 10 ** 18 / 100);  // valid collateral rate is 60%
 
         CToken[] memory ct = new CToken[](1);
@@ -101,8 +101,8 @@ contract Setup {
         uint[] memory ss = new uint[](1);
         ss[0] = 67 * 10 ** 18 / 1000;
 
-        unitrollerProxy._setMarketBorrowCaps(ct, mbc);
-        unitrollerProxy._setCompSpeeds(ct, 
+        unitrollerProxyToImpl._setMarketBorrowCaps(ct, mbc);
+        unitrollerProxyToImpl._setCompSpeeds(ct,
                                        bs, // supplySpeed: Comp per block
                                        ss  // borrowSpeed: Comp per block
                                       );
