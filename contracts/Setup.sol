@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 //cToken
@@ -15,11 +16,11 @@ import "./Governance/Timelock.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 // underlying asset
-import "./tokenForTest/TestERC20Asset.sol";
+//import "./tokenForTest/TestERC20Asset.sol";
 
 contract Setup {
     // address public TT1 = 0xe09D4de9f1dCC8A4d5fB19c30Fb53830F8e2a047;
-    TestERC20Asset public TT1;
+    address  public TT1;
     Comp public comp;
     CErc20Delegator public cTT1;
     CErc20Delegate public cTT1Delegate;
@@ -30,9 +31,9 @@ contract Setup {
     SimplePriceOracle public priceOracle;
     Timelock public timelock;
 
-    constructor() {
+    constructor(address tt1_) {
         // underlying asset
-        TT1 = new TestERC20Asset("TT1", "T1");
+        TT1 = tt1_;
 
         timelock = new Timelock(msg.sender, uint256(1 seconds));
         // governance token for borrow and incentives

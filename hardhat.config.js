@@ -12,7 +12,7 @@ module.exports = {
         settings: {
             optimizer: {
                 enabled: true,
-                runs: 200,
+                runs: 1000,
             },
         },
     },
@@ -23,7 +23,13 @@ module.exports = {
         },
         aurora_test: {
             url: `https://testnet.aurora.dev/`,
-            accounts: [process.env.KEY1, process.env.KEY2],
+            chainId: 1313161555,
+            accounts: [process.env.KEY0,process.env.KEY1, process.env.KEY2],
+        },
+        aurora:{
+            url: `https://mainnet.aurora.dev`,
+            chainId: 1313161554,
+            accounts: [process.env.KEY0,process.env.KEY1, process.env.KEY2],
         }
     },
     paths: {

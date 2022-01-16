@@ -475,7 +475,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         address cTokenCollateral,
         address liquidator,
         address borrower,
-        uint repayAmount) external override returns (uint) {
+        uint repayAmount) external override view returns (uint) {
         // Shh - currently unused
         liquidator;
 
