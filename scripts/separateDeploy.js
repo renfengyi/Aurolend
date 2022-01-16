@@ -39,25 +39,29 @@ async function main() {
 
     const unitrollerProxy = await deployContract("Unitroller", []);
     const comptrollerImpl = await deployContract("Comptroller", []);
-    console.log("")
+    console.log("comptrollerImpl: ", comptrollerImpl.address);
     await unitrollerProxy._setPendingImplementation(comptrollerImpl.address);
-    await comptrollerImpl._become(unitrollerProxy);
+    await comptrollerImpl._become(unitrollerProxy.address);
 
     const unitrollerProxyToImplFa = await ethers.getContractFactory("Comptroller");
     const unitrollerProxyToImpl = unitrollerProxyToImplFa.attach(unitrollerProxy.address);
-    console.log("enter 47");
+
     // 初始化comptroller参数
-    await unitrollerProxyToImpl._setPriceOracle(priceOracle);
+    await unitrollerProxyToImpl._setPriceOracle(priceOracle.address);
     // maximum fraction of origin loan that can be liquidated
-    await unitrollerProxyToImpl._setCloseFactor(BigNumber.from(500000000000000000));
+    await unitrollerProxyToImpl._setCloseFactor(BigNumber.from(50).mul(facotr));
+
     // 50%
     // collateral received as a multiplier of amount liquidator paid
-    await unitrollerProxyToImpl._setLiquidationIncentive(BigNumber.from(1080000000000000000));
+    await unitrollerProxyToImpl._setLiquidationIncentive(BigNumber.from(108).mul(facotr));
     // 108%
 
     const cTT1Delegate = await deployContract("CErc20Delegate", []);
-    const data = hexValue(0);
+    // const data = hexValue(0);
+    const data = "0x00";
+
     const factor26 = BigNumber.from(10).pow(16);
+
     const cTT1 = await deployContract("CErc20Delegator",
         [
             TT1.address,
@@ -77,7 +81,7 @@ async function main() {
 
 
     // set price of TT1
-    await priceOracle.setUnderlyingPrice(cTT1.address, 1e18);
+    await priceOracle.setUnderlyingPrice(cTT1.address, BigNumber.from(1).mul(facotr).mul(100));
     // set markets supported by comptroller
     await unitrollerProxyToImpl._supportMarket(cTT1.address);
     // multiplier of collateral for borrowing cap
