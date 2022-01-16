@@ -3,7 +3,7 @@ const {BigNumber} = require("ethers");
 const {hexValue} = require("ethers/lib/utils");
 
 async function main() {
-    // 准备两个账号
+    // 账号
     const [sender,] = await ethers.getSigners();
     // 部署底层资产
     const TT1 = await deployContract("TestERC20Asset", ["TT1", "T1"]);
@@ -16,16 +16,6 @@ async function main() {
     // oracle
     const priceOracle = await deployContract("SimplePriceOracle", []);
 
-    // interest model
-    // const interstModelFactory = await ethers.getContractFactory("JumpRateModelV2");
-    // const facotr = BigNumber.from(1).mul(10).pow(18).div(100)
-    // const interstModelInstance = await interstModelFactory.deploy(
-    //     ((BigNumber.from(5)).mul(facotr)),//baseRatePerYear
-    //     (BigNumber.from(12).mul(facotr)),//multiplierPerYear
-    //     (BigNumber.from(24).mul(facotr)),//jumpMultiplierPerYear
-    //     (BigNumber.from(80).mul(facotr)),//kink_
-    //     timelockInstance.address // owner
-    // );
 
     const facotr = BigNumber.from(1).mul(10).pow(18).div(100)
     const interstModel = await deployContract("JumpRateModelV2", [
