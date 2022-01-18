@@ -17,7 +17,7 @@ async function deployCompound() {
 
 
     const facotr = BigNumber.from(1).mul(10).pow(18).div(100)
-    const interstModel = await deployContract("JumpRateModelV2", [
+    const interestModel = await deployContract("JumpRateModelV2", [
         ((BigNumber.from(5)).mul(facotr)),//baseRatePerYear
         (BigNumber.from(12).mul(facotr)),//multiplierPerYear
         (BigNumber.from(24).mul(facotr)),//jumpMultiplierPerYear
@@ -55,7 +55,7 @@ async function deployCompound() {
         [
             TT1.address,
             unitrollerProxy.address,
-            interstModel.address,
+            interestModel.address,
             BigNumber.from(2).mul(factor26),
             "Compound TT1", // name
             "cTT1", // symbol
@@ -98,13 +98,23 @@ async function deployCompound() {
 
 
     // const
-    console.log("TT1 address:", TT1.address);
-    console.log("Comp address:", comp.address);
-    console.log("CErc20Delegator address:", cTT1.address)
-    console.log("Unitroller address:", unitrollerProxy.address)
-    console.log("priceOracle address:", priceOracle.address)
-    console.log("interst model address:", interstModel.address)
-    console.log("deployed compound", ans)
+    // console.log("TT1 address:", TT1.address);
+    // console.log("Comp address:", comp.address);
+    // console.log("CErc20Delegator address:", cTT1.address)
+    // console.log("Unitroller address:", unitrollerProxy.address)
+    // console.log("priceOracle address:", priceOracle.address)
+    // console.log("interst model address:", interstModel.address)
+    // console.log("deployed compound", ans)
+    return {
+        TT1: TT1,
+        comp: comp,
+        cTT1: cTT1,
+        unitrollerProxy: unitrollerProxy,
+        priceOracle: priceOracle,
+        interestModel: interestModel
+    };
+
+
 }
 
 
@@ -113,10 +123,9 @@ async function deployContract(name, args) {
     return await factory.deploy(...args)
 }
 
-deployCompound()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
 
+
+module.exports = {
+    deployCompound,
+    deployContract
+}
