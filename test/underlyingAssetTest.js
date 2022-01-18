@@ -1,21 +1,20 @@
 const {expect} = require("chai");
 const {ethers} = require("hardhat");
-const {getInstance} = require("./utils");
-
+const {deployContract} = require("./separateDeploy");
 describe("TT1", async () => {
-    let sender, TT1, tt1Ins;
+    let sender, ins;
     before(async () => {
-        [sender,] = await ethers.getSigners();
-        TT1 = "0x9fB47402890C87917DF7680DEE29d9Bf6ba8fc6E"
-        tt1Ins = await getInstance("TestERC20Asset", TT1);
+        [sender, reciver] = await ethers.getSigners();
+        ins = await deployContract("TestERC20Asset",["TestERC20Asset","TT1"])
     })
-    describe("base function test",async ()=>{
+    describe("base function test", async () => {
         it('should balanceOf not zero', async () => {
-           expect(await tt1Ins.balanceOf(sender.address)).to.above(0);
+            expect(await ins.balanceOf(sender.address)).to.above(0)
         });
 
-        it('should transfer', function () {
-
+        it('should transfer', async function () {
+            // let ans = await tt1Ins.transfer(reciver.address, 1);
+            // console.log("transfer ans", ans);
         });
     })
 
