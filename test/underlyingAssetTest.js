@@ -1,6 +1,6 @@
 const {expect} = require("chai");
 const {ethers} = require("hardhat");
-const {deployContract} = require("./separateDeploy");
+const {deployContract} = require("./utils");
 describe("TT1", async () => {
     let sender, ins;
     before(async () => {

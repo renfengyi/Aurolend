@@ -1,22 +1,24 @@
 const {ethers} = require("hardhat");
 const {BigNumber} = require("ethers");
+const {addPool, initPool} = require("./compoundAsset");
+const {deployContract} = require("./utils");
 
 async function deployCompound() {
     // 账号
     const [sender,] = await ethers.getSigners();
-    // 部署底层资产
-    const TT1 = await deployContract("TestERC20Asset", ["TT1", "T1"]);
+
     // 部署timelock
     const timelockFactory = await ethers.getContractFactory("Timelock");
     const timelockInstance = await timelockFactory.deploy(sender.address, BigNumber.from("1"));
-
     // comp
     const comp = await deployContract("Comp", [sender.address])
     // oracle
     const priceOracle = await deployContract("SimplePriceOracle", []);
 
+    // factor
+    const facotr = BigNumber.from(1).mul(10).pow(18).div(100);
+    const factor26 = BigNumber.from(10).pow(16);
 
-    const facotr = BigNumber.from(1).mul(10).pow(18).div(100)
     const interestModel = await deployContract("JumpRateModelV2", [
         ((BigNumber.from(5)).mul(facotr)),//baseRatePerYear
         (BigNumber.from(12).mul(facotr)),//multiplierPerYear
@@ -45,66 +47,72 @@ async function deployCompound() {
     await unitrollerProxyToImpl._setLiquidationIncentive(BigNumber.from(108).mul(facotr));
     // 108%
 
-    const cTT1Delegate = await deployContract("CErc20Delegate", []);
-    // const data = hexValue(0);
+
+    // add pool 1
+    // 底层资产
+    const TT1 = await deployContract("TestERC20Asset", ["TT1", "T1"]);
     const data = "0x00";
-
-    const factor26 = BigNumber.from(10).pow(16);
-
-    const cTT1 = await deployContract("CErc20Delegator",
-        [
-            TT1.address,
-            unitrollerProxy.address,
-            interestModel.address,
-            BigNumber.from(2).mul(factor26),
-            "Compound TT1", // name
-            "cTT1", // symbol
-            8, // decimals
-            sender.address,
-            cTT1Delegate.address,
-            data
-        ]
-    );
-    await cTT1._setReserveFactor(BigNumber.from(25).mul(facotr));
-    // 25% interest charged for reserve
-
-
-    // set price of TT1
-    await priceOracle.setUnderlyingPrice(cTT1.address, BigNumber.from(1).mul(facotr).mul(100));
-    // set markets supported by comptroller
-    await unitrollerProxyToImpl._supportMarket(cTT1.address);
-    // multiplier of collateral for borrowing cap
-    await unitrollerProxyToImpl._setCollateralFactor(
-        cTT1.address,
-        BigNumber.from(60).mul(facotr)
-    );
-    // valid collateral rate is 60%
-
-    const ct = [cTT1.address]
-    const mbc = [0]
-
-    const bs = [BigNumber.from(67).mul(facotr).div(10)]
-
-
-    const ss = [BigNumber.from(67).mul(facotr).div(10)]
-
-    await unitrollerProxyToImpl._setMarketBorrowCaps(ct, mbc);
-
-    await unitrollerProxyToImpl._setCompSpeeds(
-        ct,
-        bs, // supplySpeed: Comp per block
-        ss // borrowSpeed: Comp per block
-    );
+    const cTT1 = await addPool(
+        TT1.address,
+        unitrollerProxy.address,
+        interestModel.address,
+        BigNumber.from(2).mul(factor26),
+        "Compound cTT1",
+        "cTT1",
+        8,
+        sender.address,
+        data
+    )
+    //await cTT1._setReserveFactor(BigNumber.from(25).mul(facotr));
+    // // set price of TT1
+    // await priceOracle.setUnderlyingPrice(cTT1.address, BigNumber.from(1).mul(facotr).mul(100));
+    // // set markets supported by comptroller
+    // await unitrollerProxyToImpl._supportMarket(cTT1.address);
+    // // multiplier of collateral for borrowing cap
+    // await unitrollerProxyToImpl._setCollateralFactor(
+    //     cTT1.address,
+    //     BigNumber.from(60).mul(facotr)
+    // );
+    let reserveFactor = BigNumber.from(25).mul(facotr);
+    let underlyingPrice = BigNumber.from(1).mul(facotr).mul(100);
+    let collateralFactor = BigNumber.from(60).mul(facotr);
+    let contracts = {priceOracle: priceOracle, unitrollerProxyToImpl: unitrollerProxyToImpl,}
+    let compSpeed = BigNumber.from(67).mul(facotr).div(10)
+    await initPool(
+        cTT1,
+        contracts,
+        reserveFactor,
+        underlyingPrice,
+        collateralFactor,
+        0,
+        compSpeed,
+        compSpeed
+    )
 
 
-    // const
-    // console.log("TT1 address:", TT1.address);
-    // console.log("Comp address:", comp.address);
-    // console.log("CErc20Delegator address:", cTT1.address)
-    // console.log("Unitroller address:", unitrollerProxy.address)
-    // console.log("priceOracle address:", priceOracle.address)
-    // console.log("interst model address:", interstModel.address)
-    // console.log("deployed compound", ans)
+    // add pool 2
+    const TT2 = await deployContract("TestERC20Asset", ["TT2", "T2"]);
+    const cTT2 = await addPool(TT2.address,
+        unitrollerProxy.address,
+        interestModel.address,
+        BigNumber.from(2).mul(factor26),
+        "Compound cTT2",
+        "cTT2",
+        8,
+        sender.address,
+        data
+    )
+    await initPool(
+        cTT2,
+        contracts,
+        reserveFactor,
+        underlyingPrice,
+        collateralFactor,
+        0,
+        compSpeed,
+        compSpeed
+    )
+
     return {
         TT1: TT1,
         comp: comp,
@@ -118,14 +126,6 @@ async function deployCompound() {
 }
 
 
-async function deployContract(name, args) {
-    const factory = await ethers.getContractFactory(name);
-    return await factory.deploy(...args)
-}
-
-
-
 module.exports = {
     deployCompound,
-    deployContract
 }
