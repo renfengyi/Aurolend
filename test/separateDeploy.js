@@ -17,7 +17,8 @@ async function deployCompound() {
 
     // factor
     const facotr = BigNumber.from(1).mul(10).pow(18).div(100);
-    const factor26 = BigNumber.from(10).pow(16);
+    const factor16 = BigNumber.from(10).pow(16);
+    const factor18 = BigNumber.from(10).pow(18);
 
     const interestModel = await deployContract("JumpRateModelV2", [
         ((BigNumber.from(5)).mul(facotr)),//baseRatePerYear
@@ -56,7 +57,7 @@ async function deployCompound() {
         TT1.address,
         unitrollerProxy.address,
         interestModel.address,
-        BigNumber.from(2).mul(factor26),
+        BigNumber.from(2).mul(factor16),
         "Compound cTT1",
         "cTT1",
         8,
@@ -74,7 +75,7 @@ async function deployCompound() {
     //     BigNumber.from(60).mul(facotr)
     // );
     let reserveFactor = BigNumber.from(25).mul(facotr);
-    let underlyingPrice = BigNumber.from(1).mul(facotr).mul(100);
+    let underlyingPrice = 100;
     let collateralFactor = BigNumber.from(60).mul(facotr);
     let contracts = {priceOracle: priceOracle, unitrollerProxyToImpl: unitrollerProxyToImpl,}
     let compSpeed = BigNumber.from(67).mul(facotr).div(10)
@@ -82,7 +83,7 @@ async function deployCompound() {
         cTT1,
         contracts,
         reserveFactor,
-        underlyingPrice,
+        BigNumber.from(underlyingPrice).mul(factor18),
         collateralFactor,
         0,
         compSpeed,
@@ -95,7 +96,7 @@ async function deployCompound() {
     const cTT2 = await addPool(TT2.address,
         unitrollerProxy.address,
         interestModel.address,
-        BigNumber.from(2).mul(factor26),
+        BigNumber.from(2).mul(factor16),
         "Compound cTT2",
         "cTT2",
         8,
@@ -106,7 +107,7 @@ async function deployCompound() {
         cTT2,
         contracts,
         reserveFactor,
-        underlyingPrice,
+        BigNumber.from(underlyingPrice).mul(factor18),
         collateralFactor,
         0,
         compSpeed,
@@ -115,8 +116,10 @@ async function deployCompound() {
 
     return {
         TT1: TT1,
+        TT2: TT2,
         comp: comp,
         cTT1: cTT1,
+        cTT2: cTT2,
         unitrollerProxy: unitrollerProxy,
         priceOracle: priceOracle,
         interestModel: interestModel
