@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "contracts/Interfaces/ComptrollerInterface.sol";
-import "contracts/InterestModel/InterestRateModel.sol";
-import "contracts/Interfaces/EIP20NonStandardInterface.sol";
+import "../Interfaces/ComptrollerInterface.sol";
+import "../InterestModel/InterestRateModel.sol";
+import "../Interfaces/EIP20NonStandardInterface.sol";
 
 contract CTokenStorage {
     bool internal _notEntered;

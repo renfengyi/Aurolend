@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "contracts/CToken/CErc20.sol";
+import "../CToken/CErc20.sol";
 
 /**
  * @title Compound's CErc20Delegate Contract
@@ -14,7 +15,7 @@ contract CErc20Delegate is CErc20, CDelegateInterface {
     constructor() {}
 
     /**
-     * @notice Called by the delegator on a delegate to initialize it for duty
+     * @notice Call ed by the delegator on a delegate to initialize it for duty
      * @param data The encoded bytes data for any initialization
      */
     function _becomeImplementation(bytes memory data) public override virtual {

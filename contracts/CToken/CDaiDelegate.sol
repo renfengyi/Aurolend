@@ -1,6 +1,6 @@
 pragma solidity ^0.8.0;
 
-import "contracts/CToken/CErc20Delegate.sol";
+import "../CToken/CErc20Delegate.sol";
 
 /**
  * @title Compound's CDai Contract

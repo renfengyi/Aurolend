@@ -4,7 +4,7 @@ cache
 deploy
 deployments
 node_modules
-scripts
+# scripts
 data
 typechain
 coverage
@@ -46,3 +46,7 @@ hardhat.config.ts
 
 # complementary info
 README.md
+
+#IDE
+.idea
+.vscode
