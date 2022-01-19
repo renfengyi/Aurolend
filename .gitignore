@@ -10,6 +10,7 @@ typechain
 coverage
 test_ref
 testFunction
+test
 
 # DIY dirs
 notebooks/
