@@ -72,7 +72,7 @@ library NPSwap {
         address tokenA,
         address tokenB
     )
-        internal view
+        public view
         returns (address pair)
     {
         (, address factory, bytes32 initalCodeHash) = getSwapParameter();
@@ -83,6 +83,14 @@ library NPSwap {
                 keccak256(abi.encodePacked(token0, token1)),
                 initalCodeHash // init code hash
             )))));
+    }
+
+    function isReversed(
+        address tokenA,
+        address tokenB
+    ) external view returns (bool isReversed){
+        (address token0,) = sortTokens(tokenA, tokenB);
+        isReversed = token0 == tokenB;
     }
 
     function getReserves(
@@ -137,5 +145,64 @@ library NPSwap {
         //polygon, Mumbai Testnet(testnet of polygon)
         else if(chainID == 137 || chainID == 80001) return(routerQuick, factoryQuick, initalCodeHashQuick);
         else revert("Not Supported chainID");
+    }
+}
+
+// a library for handling binary fixed point numbers (https://en.wikipedia.org/wiki/Q_(number_format))
+library FixedPoint {
+    // range: [0, 2**112 - 1]
+    // resolution: 1 / 2**112
+    struct uq112x112 {
+        uint224 _x;
+    }
+
+    // eg. numerator = 0x11, denominator = 0x11, 0x1111 / 0x11 = 5 => 0x0101
+    // returns a uq112x112 which represents the ratio of the numerator to the denominator
+    // equivalent to encode(numerator).div(denominator)
+    function fraction(uint112 numerator, uint112 denominator) internal pure returns (uq112x112 memory) {
+        require(denominator > 0, "FixedPoint: DIV_BY_ZERO");
+        return uq112x112((uint224(numerator) << 112) / denominator);
+    }
+
+    // 0x0101 / 0x11 = 5 / 3 =  1
+    // decode a uq112x112 into a uint with 18 decimals of precision(计算整数部分uint112值)
+    function decode112with18(uq112x112 memory self) internal pure returns (uint) {
+        // we only have 256 - 224 = 32 bits to spare, so scaling up by ~60 bits is dangerous
+        // instead, get close to:
+        //  (x * 1e18) >> 112
+        // without risk of overflowing, e.g.:
+        //  (x) / 2 ** (112 - lg(1e18))
+        return uint(self._x) / 5192296858534827;
+    }
+}
+
+// library with helper methods for oracles that are concerned with computing average prices
+library UniswapV2OracleLibrary {
+    using FixedPoint for *;
+
+    // helper function that returns the current block timestamp within the range of uint32, i.e. [0, 2**32 - 1]
+    function currentBlockTimestamp() internal view returns (uint32) {
+        return uint32(block.timestamp % 2 ** 32);
+    }
+
+    // produces the cumulative price using counterfactuals to save gas and avoid a call to sync.
+    function currentCumulativePrices(
+        address pair
+    ) internal view returns (uint price0Cumulative, uint price1Cumulative, uint32 blockTimestamp) {
+        blockTimestamp = currentBlockTimestamp();
+        price0Cumulative = IUniswapV2Pair(pair).price0CumulativeLast();
+        price1Cumulative = IUniswapV2Pair(pair).price1CumulativeLast();
+
+        // if time has elapsed since the last update on the pair, mock the accumulated price values
+        (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast) = IUniswapV2Pair(pair).getReserves();
+        if (blockTimestampLast != blockTimestamp) {
+            // subtraction overflow is desired
+            uint32 timeElapsed = blockTimestamp - blockTimestampLast;
+            // addition overflow is desired
+            // counterfactual
+            price0Cumulative += uint(FixedPoint.fraction(reserve1, reserve0)._x) * timeElapsed;
+            // counterfactual
+            price1Cumulative += uint(FixedPoint.fraction(reserve0, reserve1)._x) * timeElapsed;
+        }
     }
 }
