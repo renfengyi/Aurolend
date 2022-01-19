@@ -18,19 +18,24 @@ module.exports = {
     },
     networks: {
         rinkeby: {
-            url: `https://rinkeby.infura.io/v3/${process.env.INFURA_ID}`,
-            accounts: [process.env.KEY1, process.env.KEY2]
+            url: "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+            accounts: ["24bbb8a437040fbd722b7af977086aa876d0ae3c082cf765883586f6883115c2"]
         },
         aurora_test: {
-            url: `https://testnet.aurora.dev/`,
+            url: "https://testnet.aurora.dev/",
             chainId: 1313161555,
-            accounts: [process.env.KEY0,process.env.KEY1, process.env.KEY2],
+            accounts: ["24bbb8a437040fbd722b7af977086aa876d0ae3c082cf765883586f6883115c2"],
         },
         aurora:{
-            url: `https://mainnet.aurora.dev`,
+            url: "https://mainnet.aurora.dev",
             chainId: 1313161554,
-            accounts: [process.env.KEY0,process.env.KEY1, process.env.KEY2],
-        }
+            accounts: ["24bbb8a437040fbd722b7af977086aa876d0ae3c082cf765883586f6883115c2"],
+        },
+        heco_testnet: {
+            url: "https://http-testnet.hecochain.com/",
+            accounts: ["24bbb8a437040fbd722b7af977086aa876d0ae3c082cf765883586f6883115c2"],
+            chainId: 256,
+        },
     },
     paths: {
         sources: "./contracts",
